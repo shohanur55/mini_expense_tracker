@@ -1,30 +1,58 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:mini_expense_tracker/main.dart';
+import 'package:mini_expense_tracker/core/validation/form_validator.dart';
+import 'package:mini_expense_tracker/feature/expense/model/expense_model.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('FormValidation Tests', () {
+    test('validateEmail returns null for valid email', () {
+      expect(FormValidation.validateEmail('user@example.com'), isNull);
+    });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    test('validateEmail returns error for invalid email', () {
+      expect(FormValidation.validateEmail('invalid-email'), isNotNull);
+      expect(FormValidation.validateEmail(''), isNotNull);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('validatePassword returns null for valid password', () {
+      expect(FormValidation.validatePassword('123456'), isNull);
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    test('validatePassword returns error for short password', () {
+      expect(FormValidation.validatePassword('123'), isNotNull);
+    });
+
+    test('validateAmount returns null for positive numbers', () {
+      expect(FormValidation.validateAmount('45.50'), isNull);
+    });
+
+    test('validateAmount returns error for zero or negative numbers', () {
+      expect(FormValidation.validateAmount('0'), isNotNull);
+      expect(FormValidation.validateAmount('-10'), isNotNull);
+      expect(FormValidation.validateAmount('abc'), isNotNull);
+    });
+  });
+
+  group('ExpenseModel Tests', () {
+    test('toJson and fromJson serialization works correctly', () {
+      final now = DateTime.now();
+      final model = ExpenseModel(
+        id: 'test_1',
+        userId: 'user_1',
+        amount: 99.99,
+        category: 'Food & Dining',
+        date: now,
+        note: 'Team lunch',
+        createdAt: now,
+      );
+
+      final json = model.toJson();
+      final parsed = ExpenseModel.fromJson(json);
+
+      expect(parsed.id, model.id);
+      expect(parsed.userId, model.userId);
+      expect(parsed.amount, model.amount);
+      expect(parsed.category, model.category);
+      expect(parsed.note, model.note);
+    });
   });
 }

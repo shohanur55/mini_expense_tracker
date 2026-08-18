@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:driver_part/core/utility/snackbar_helper.dart';
-
-import 'package:driver_part/l10n/app_localizations.dart';
-
-import 'core/localization/app_locale_controller.dart';
+import 'core/binding/app_binding.dart';
 import 'core/route/app_route.dart';
-import 'core/theme/dart_theme.dart';
-import 'core/theme/light_theme.dart';
+import 'core/service/auth_service.dart';
+import 'core/theme/app_theme.dart';
+import 'core/theme/theme_controller.dart';
+import 'core/utility/app_constants.dart';
+import 'core/utility/snackbar_helper.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -20,22 +19,22 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        final localeController = Get.find<AppLocaleController>();
+        final themeController = ThemeController.to;
+        final authService = AuthService.to;
 
         return Obx(
           () => GetMaterialApp(
             scaffoldMessengerKey: SnackbarHelper.scaffoldMessengerKey,
             debugShowCheckedModeBanner: false,
-            title: AppLocalizations.of(context)?.appTitle ?? 'Car Parking',
-            theme: lightThemeData(),
-            darkTheme: darkThemeData(),
-            themeMode: ThemeMode.light,
-            initialRoute: AppRoute.splash,
+            title: AppConstants.appName,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeController.theme,
+            initialBinding: AppBinding(),
+            initialRoute: authService.isLoggedIn.value
+                ? AppRoute.mainNav
+                : AppRoute.login,
             getPages: AppRoute.route,
-            locale: localeController.currentLocale.value,
-            fallbackLocale: const Locale('en'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
           ),
         );
       },
