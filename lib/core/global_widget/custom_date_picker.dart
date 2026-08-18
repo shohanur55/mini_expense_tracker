@@ -1,111 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-import 'package:table_calendar/table_calendar.dart';
-
-import 'controller/custom_date_time_controller.dart';
-import 'custom_elevated_button.dart';
+import '../utility/date_formatter.dart';
+import 'custom_text_field.dart';
 
 class CustomDatePicker extends StatelessWidget {
-  final Function(DateTime selectedDate) selectedDateCallback;
+  final String? label;
+  final DateTime? selectedDate;
+  final ValueChanged<DateTime> onDateSelected;
+  final String? Function(String?)? validator;
 
-  const CustomDatePicker({super.key, required this.selectedDateCallback});
+  const CustomDatePicker({
+    super.key,
+    this.label = 'Date',
+    required this.selectedDate,
+    required this.onDateSelected,
+    this.validator,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final dateController = Get.find<CustomDateTimeController>();
-    var selectedDate = dateController.selectedDate.value;
+    final textController = TextEditingController(
+      text: selectedDate != null
+          ? DateFormatter.formatShortDate(selectedDate!)
+          : '',
+    );
 
-    int currentYear = DateTime.now().year;
-    List<int> yearsList = List.generate(100, (index) => currentYear - index); // Past 100 years
-
-
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-
-            Obx(
-            ()=> Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: DropdownButton<int>(
-                  value: dateController.selectedDate.value.year,
-                  onChanged: (newYear) {
-                    if (newYear != null) {
-                      // Update the selected year in the calendar
-                      dateController.setSelectedDate(DateTime(newYear, selectedDate.month, selectedDate.day));
-                      selectedDateCallback(DateTime(newYear, selectedDate.month, selectedDate.day));
-                    }
-                  },
-                  items: yearsList.map((int year) {
-                    return DropdownMenuItem<int>(
-                      value: year,
-                      child: Text(year.toString(), style: TextStyle(fontSize: 18)),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
-
-
-
-            // TableCalendar widget
-            Obx(() {
-              return TableCalendar(
-                headerStyle: HeaderStyle(
-                  titleCentered: true,
-                  formatButtonVisible: false,
-                  titleTextStyle: Theme.of(context).textTheme.titleLarge!,
-                ),
-                calendarStyle: CalendarStyle(
-                  defaultTextStyle: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium!.copyWith(color: Colors.black),
-                  weekendTextStyle: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium!.copyWith(color: Colors.black),
-                ),
-                focusedDay: dateController.selectedDate.value,
-                selectedDayPredicate: (day) {
-                  // Return true if the day is the selected date
-                  return isSameDay(dateController.selectedDate.value, day);
-                },
-                daysOfWeekVisible: false,
-                onDaySelected: (selectedDay, focusedDay) {
-                  selectedDate = dateController.selectedDate.value;
-                  dateController.setSelectedDate(selectedDay);
-                  selectedDateCallback(
-                    selectedDay,
-                  ); // Pass the selected date back
-                  // Navigator.pop(
-                  //     context); // Close the bottom sheet after selecting the date
-                },
-                // firstDay: dateController.startDate.value,
-                // // Use startDate as the first day
-                // lastDay: DateTime.utc(2099, 12, 31),
-                firstDay: DateTime(dateController.selectedDate.value.year, 1, 1),
-                lastDay: DateTime(dateController.selectedDate.value.year, 12, 31),
-                // Set last valid date
-                calendarFormat: CalendarFormat.month,
-              );
-            }),
-            SizedBox(height: 8.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: CustomElevatedButton(
-                borderRadius: 8.r,
-                ontap: () {
-                  selectedDateCallback(selectedDate);
-                  Navigator.pop(context);
-                },
-                text: "Next",
-              ),
-            ),
-          ],
-        ),
-      ),
+    return CustomTextField(
+      label: label,
+      hintText: 'Select Date',
+      controller: textController,
+      readOnly: true,
+      prefixIcon: const Icon(Icons.calendar_today_outlined),
+      suffixIcon: const Icon(Icons.arrow_drop_down),
+      validator: validator,
+      onTap: () async {
+        final initial = selectedDate ?? DateTime.now();
+        final picked = await showDatePicker(
+          context: context,
+          initialDate: initial,
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2100),
+        );
+        if (picked != null) {
+          onDateSelected(picked);
+        }
+      },
     );
   }
 }
