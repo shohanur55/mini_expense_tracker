@@ -12,7 +12,6 @@ class AuthController extends GetxController {
   final loginPasswordController = TextEditingController();
   final loginFormKey = GlobalKey<FormState>();
 
-  final regNameController = TextEditingController();
   final regEmailController = TextEditingController();
   final regPasswordController = TextEditingController();
   final regFormKey = GlobalKey<FormState>();
@@ -23,7 +22,6 @@ class AuthController extends GetxController {
   void onClose() {
     loginEmailController.dispose();
     loginPasswordController.dispose();
-    regNameController.dispose();
     regEmailController.dispose();
     regPasswordController.dispose();
     super.onClose();
@@ -55,12 +53,10 @@ class AuthController extends GetxController {
     isLoading.value = true;
     try {
       await _authService.register(
-        name: regNameController.text.trim(),
         email: regEmailController.text.trim(),
         password: regPasswordController.text,
       );
       SnackbarHelper.showSuccess('Account Created!', 'Welcome to Mini Expense Tracker');
-      regNameController.clear();
       regEmailController.clear();
       regPasswordController.clear();
       Get.offAllNamed(AppRoute.mainNav);

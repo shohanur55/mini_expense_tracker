@@ -34,7 +34,7 @@ class AuthService extends GetxService {
   Future<bool> register({
     required String email,
     required String password,
-    required String name,
+    String? name,
   }) async {
     await Future.delayed(const Duration(milliseconds: 600)); // Simulate async network call
     final users = _storage.read<Map<String, dynamic>>(_registeredUsersKey) ?? {};
@@ -43,15 +43,19 @@ class AuthService extends GetxService {
       throw 'An account with this email already exists';
     }
 
+    final displayName = name?.trim().isNotEmpty == true
+        ? name!.trim()
+        : email.split('@').first;
+
     users[email.toLowerCase()] = {
       'email': email.trim(),
       'password': password,
-      'name': name.trim(),
+      'name': displayName,
     };
     await _storage.write(_registeredUsersKey, users);
 
     // Automatically log in user after registration
-    await _saveUserSession(email: email.trim(), name: name.trim());
+    await _saveUserSession(email: email.trim(), name: displayName);
     return true;
   }
 

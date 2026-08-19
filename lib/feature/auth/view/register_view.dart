@@ -45,15 +45,6 @@ class RegisterView extends GetView<AuthController> {
                   ),
                   SizedBox(height: 32.h),
 
-                  // Full Name
-                  CustomTextField(
-                    label: 'Full Name',
-                    hintText: 'John Doe',
-                    controller: controller.regNameController,
-                    prefixIcon: const Icon(Icons.person_outline),
-                    validator: FormValidation.validateName,
-                  ),
-                  SizedBox(height: 16.h),
 
                   // Email Address
                   CustomTextField(
