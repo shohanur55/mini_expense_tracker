@@ -54,5 +54,45 @@ void main() {
       expect(parsed.category, model.category);
       expect(parsed.note, model.note);
     });
+
+    test('Total expense and monthly calculations test', () {
+      final now = DateTime.now();
+      final lastMonth = DateTime(now.year, now.month - 1, 15);
+
+      final expenses = [
+        ExpenseModel(
+          id: '1',
+          userId: 'u1',
+          amount: 100.0,
+          category: 'Food',
+          date: now,
+          createdAt: now,
+        ),
+        ExpenseModel(
+          id: '2',
+          userId: 'u1',
+          amount: 50.0,
+          category: 'Transport',
+          date: now,
+          createdAt: now,
+        ),
+        ExpenseModel(
+          id: '3',
+          userId: 'u1',
+          amount: 200.0,
+          category: 'Shopping',
+          date: lastMonth,
+          createdAt: lastMonth,
+        ),
+      ];
+
+      final total = expenses.fold(0.0, (sum, item) => sum + item.amount);
+      final currentMonthTotal = expenses.where((e) {
+        return e.date.year == now.year && e.date.month == now.month;
+      }).fold(0.0, (sum, item) => sum + item.amount);
+
+      expect(total, 350.0);
+      expect(currentMonthTotal, 150.0);
+    });
   });
 }
