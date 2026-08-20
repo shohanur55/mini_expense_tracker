@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/route/app_route.dart';
@@ -26,23 +27,43 @@ class ExpenseController extends GetxController {
   final Rxn<DateTime> selectedDate = Rxn<DateTime>();
 
   ExpenseModel? editingExpense;
+  StreamSubscription<List<ExpenseModel>>? _expenseSubscription;
 
   @override
   void onInit() {
     super.onInit();
-    fetchExpenses();
-    // Re-fetch when user login state changes
-    ever(_authService.isLoggedIn, (_) => fetchExpenses());
+    _subscribeToExpenses();
+    // Re-bind expenses when user login state changes
+    ever(_authService.isLoggedIn, (_) => _subscribeToExpenses());
   }
 
   @override
   void onClose() {
+    _expenseSubscription?.cancel();
     amountController.dispose();
     noteController.dispose();
     super.onClose();
   }
 
-  String get userId => _authService.currentUserEmail.value ?? 'guest';
+  String get userId => _authService.currentUserId.isNotEmpty
+      ? _authService.currentUserId
+      : (_authService.currentUserEmail.value ?? 'guest');
+
+  void _subscribeToExpenses() {
+    _expenseSubscription?.cancel();
+    isLoading.value = true;
+
+    try {
+      _expenseSubscription = _expenseService.streamExpenses(userId).listen((list) {
+        expenses.assignAll(list);
+        isLoading.value = false;
+      }, onError: (err) {
+        fetchExpenses();
+      });
+    } catch (_) {
+      fetchExpenses();
+    }
+  }
 
   Future<void> fetchExpenses() async {
     isLoading.value = true;
@@ -143,7 +164,9 @@ class ExpenseController extends GetxController {
           createdAt: DateTime.now(),
         );
         await _expenseService.addExpense(newExpense);
-        expenses.insert(0, newExpense);
+        if (!expenses.any((e) => e.id == newExpense.id)) {
+          expenses.insert(0, newExpense);
+        }
         SnackbarHelper.showSuccess('Success', 'Expense added successfully');
       } else {
         // Update Existing Expense
@@ -170,7 +193,7 @@ class ExpenseController extends GetxController {
 
   Future<void> deleteExpense(ExpenseModel expense) async {
     try {
-      await _expenseService.deleteExpense(expense.id);
+      await _expenseService.deleteExpense(expense.id, userId);
       expenses.removeWhere((e) => e.id == expense.id);
       SnackbarHelper.showSuccess('Deleted', 'Expense removed successfully');
     } catch (e) {

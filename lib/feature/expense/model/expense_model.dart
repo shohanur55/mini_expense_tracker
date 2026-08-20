@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ExpenseModel {
   final String id;
   final String userId;
@@ -23,22 +25,33 @@ class ExpenseModel {
       'userId': userId,
       'amount': amount,
       'category': category,
-      'date': date.toIso8601String(),
+      'date': Timestamp.fromDate(date),
       'note': note,
-      'createdAt': createdAt.toIso8601String(),
+      'createdAt': Timestamp.fromDate(createdAt),
     };
   }
 
-  factory ExpenseModel.fromJson(Map<String, dynamic> json) {
+  factory ExpenseModel.fromJson(Map<String, dynamic> json, {String? docId}) {
     return ExpenseModel(
-      id: json['id'] as String,
-      userId: json['userId'] as String,
-      amount: (json['amount'] as num).toDouble(),
-      category: json['category'] as String,
-      date: DateTime.parse(json['date'] as String),
+      id: docId ?? (json['id'] as String? ?? ''),
+      userId: json['userId'] as String? ?? '',
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      category: json['category'] as String? ?? 'General',
+      date: _parseDateTime(json['date']),
       note: json['note'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: _parseDateTime(json['createdAt']),
     );
+  }
+
+  static DateTime _parseDateTime(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    } else if (value is String) {
+      return DateTime.tryParse(value) ?? DateTime.now();
+    } else if (value is int) {
+      return DateTime.fromMillisecondsSinceEpoch(value);
+    }
+    return DateTime.now();
   }
 
   ExpenseModel copyWith({

@@ -45,6 +45,20 @@ class RegisterView extends GetView<AuthController> {
                   ),
                   SizedBox(height: 32.h),
 
+                  // Full Name Field
+                  CustomTextField(
+                    label: 'Full Name',
+                    hintText: 'Enter your full name',
+                    controller: controller.regNameController,
+                    prefixIcon: const Icon(Icons.person_outline),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter your name';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 16.h),
 
                   // Email Address
                   CustomTextField(
