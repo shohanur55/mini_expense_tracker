@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "485456853445",
+    "project_id": "mini-expense-tracker-60cb9",
+    "storage_bucket": "mini-expense-tracker-60cb9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:485456853445:android:d918e21ffdbba19aab73ac",
+        "android_client_info": {
+          "package_name": "com.example.mini_expense_tracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgy_bZKZQsIl1mMmE3igME2cw3Hd2FdS0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
