@@ -30,34 +30,20 @@ class RegisterView extends GetView<AuthController> {
                   Text(
                     'Create Account',
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                          fontSize: 26.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
+                      fontSize: 26.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   SizedBox(height: 8.h),
                   Text(
                     'Join Mini Expense Tracker to manage your money smartly',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: isDark
-                              ? AppColors.darkTextSecondary
-                              : AppColors.lightTextSecondary,
-                        ),
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
+                    ),
                   ),
-                  SizedBox(height: 32.h),
 
-                  // Full Name Field
-                  CustomTextField(
-                    label: 'Full Name',
-                    hintText: 'Enter your full name',
-                    controller: controller.regNameController,
-                    prefixIcon: const Icon(Icons.person_outline),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter your name';
-                      }
-                      return null;
-                    },
-                  ),
                   SizedBox(height: 16.h),
 
                   // Email Address

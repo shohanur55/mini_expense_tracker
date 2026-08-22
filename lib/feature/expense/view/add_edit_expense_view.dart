@@ -17,9 +17,7 @@ class AddEditExpenseView extends GetView<ExpenseController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(isEditing ? 'Edit Expense' : 'Add Expense'),
-      ),
+      appBar: AppBar(title: Text(isEditing ? 'Edit Expense' : 'Add Expense')),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
@@ -33,8 +31,9 @@ class AddEditExpenseView extends GetView<ExpenseController> {
                   label: 'Amount (${AppConstants.currencySymbol})',
                   hintText: '0.00',
                   controller: controller.amountController,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   prefixIcon: const Icon(Icons.attach_money),
                   validator: FormValidation.validateAmount,
                 ),

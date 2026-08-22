@@ -152,7 +152,8 @@ class ExpenseController extends GetxController {
     isSaving.value = true;
 
     try {
-      if (editingExpense == null) {
+      final isEdit = editingExpense != null;
+      if (!isEdit) {
         // Create New Expense
         final newExpense = ExpenseModel(
           id: 'exp_${DateTime.now().millisecondsSinceEpoch}',
@@ -167,7 +168,6 @@ class ExpenseController extends GetxController {
         if (!expenses.any((e) => e.id == newExpense.id)) {
           expenses.insert(0, newExpense);
         }
-        SnackbarHelper.showSuccess('Success', 'Expense added successfully');
       } else {
         // Update Existing Expense
         final updated = editingExpense!.copyWith(
@@ -181,9 +181,13 @@ class ExpenseController extends GetxController {
         if (index != -1) {
           expenses[index] = updated;
         }
-        SnackbarHelper.showSuccess('Updated', 'Expense details updated');
       }
       Get.back();
+      if (!isEdit) {
+        SnackbarHelper.showSuccess('Success', 'Expense added successfully');
+      } else {
+        SnackbarHelper.showSuccess('Updated', 'Expense details updated');
+      }
     } catch (e) {
       SnackbarHelper.showError('Error', 'Failed to save expense: $e');
     } finally {

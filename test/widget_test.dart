@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mini_expense_tracker/core/service/storage_service.dart';
 import 'package:mini_expense_tracker/core/validation/form_validator.dart';
 import 'package:mini_expense_tracker/feature/expense/model/expense_model.dart';
 
@@ -93,6 +94,15 @@ void main() {
 
       expect(total, 350.0);
       expect(currentMonthTotal, 150.0);
+    });
+  });
+
+  group('StorageService Keys Tests', () {
+    test('Storage keys are defined correctly', () {
+      expect(StorageService.keyIsLoggedIn, 'is_logged_in');
+      expect(StorageService.keyUserEmail, 'user_email');
+      expect(StorageService.keyUserName, 'user_name');
+      expect(StorageService.keyIsDarkMode, 'is_dark_mode');
     });
   });
 }

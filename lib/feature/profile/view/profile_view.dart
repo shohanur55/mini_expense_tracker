@@ -22,15 +22,12 @@ class ProfileView extends StatelessWidget {
     final expenseController = ExpenseController.to;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Profile'),
-      ),
+      appBar: AppBar(title: const Text('My Profile')),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
           child: Column(
             children: [
-              // User Avatar & Info Card
               CustomCard(
                 padding: EdgeInsets.all(20.r),
                 child: Column(
@@ -48,21 +45,23 @@ class ProfileView extends StatelessWidget {
                     Obx(
                       () => Text(
                         authService.currentUserName.value ?? 'User Account',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(fontSize: 20.sp, fontWeight: FontWeight.w700),
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.w700,
+                            ),
                       ),
                     ),
                     SizedBox(height: 4.h),
                     Obx(
                       () => Text(
-                        authService.currentUserEmail.value ?? 'user@example.com',
+                        authService.currentUserEmail.value ??
+                            'user@example.com',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: isDark
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.lightTextSecondary,
-                            ),
+                          color: isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary,
+                        ),
                       ),
                     ),
                   ],
@@ -86,7 +85,8 @@ class ProfileView extends StatelessWidget {
                         Obx(
                           () => Text(
                             DateFormatter.formatCurrency(
-                                expenseController.totalExpense),
+                              expenseController.totalExpense,
+                            ),
                             style: TextStyle(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.w700,
@@ -99,7 +99,9 @@ class ProfileView extends StatelessWidget {
                     Container(
                       height: 36.h,
                       width: 1,
-                      color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                      color: isDark
+                          ? AppColors.darkBorder
+                          : AppColors.lightBorder,
                     ),
                     Column(
                       children: [
@@ -156,7 +158,8 @@ class ProfileView extends StatelessWidget {
                 onPressed: () {
                   CustomDialog.show(
                     title: 'Log Out',
-                    message: 'Are you sure you want to log out of your account?',
+                    message:
+                        'Are you sure you want to log out of your account?',
                     confirmText: 'Log Out',
                     confirmColor: AppColors.error,
                     onConfirm: () => AuthController.to.logout(),

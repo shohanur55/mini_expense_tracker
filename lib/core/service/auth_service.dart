@@ -1,18 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
+import 'storage_service.dart';
 
 class AuthService extends GetxService {
   static AuthService get to => Get.find<AuthService>();
   
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final GetStorage _storage = GetStorage();
-
-  static const String _userEmailKey = 'user_email';
-  static const String _userNameKey = 'user_name';
-  static const String _isLoggedInKey = 'is_logged_in';
+  final StorageService _storage = StorageService.to;
 
   final Rxn<User> firebaseUser = Rxn<User>();
   final RxnString currentUserEmail = RxnString();
@@ -28,17 +24,16 @@ class AuthService extends GetxService {
   }
 
   void _initAuthState() {
+    // Initial local cache check from SharedPreferences
+    if (_storage.isLoggedIn) {
+      currentUserEmail.value = _storage.userEmail;
+      currentUserName.value = _storage.userName ?? 'Expense User';
+      isLoggedIn.value = true;
+    }
+
     // Bind Firebase auth state changes to reactive user object
     firebaseUser.bindStream(_auth.authStateChanges());
     ever(firebaseUser, _handleAuthChanged);
-
-    // Initial local cache check for offline speed
-    final savedLoggedIn = _storage.read<bool>(_isLoggedInKey) ?? false;
-    if (savedLoggedIn && _auth.currentUser == null) {
-      currentUserEmail.value = _storage.read<String>(_userEmailKey);
-      currentUserName.value = _storage.read<String>(_userNameKey) ?? 'Expense Tracker User';
-      isLoggedIn.value = true;
-    }
   }
 
   Future<void> _handleAuthChanged(User? user) async {
@@ -52,9 +47,9 @@ class AuthService extends GetxService {
       
       currentUserName.value = displayName;
 
-      await _storage.write(_userEmailKey, user.email);
-      await _storage.write(_userNameKey, displayName);
-      await _storage.write(_isLoggedInKey, true);
+      await _storage.setIsLoggedIn(true);
+      await _storage.setUserEmail(user.email);
+      await _storage.setUserName(displayName);
 
       // Fetch Firestore user doc for updated profile info if present
       _fetchFirestoreUserProfile(user.uid);
@@ -63,9 +58,7 @@ class AuthService extends GetxService {
       currentUserName.value = null;
       isLoggedIn.value = false;
 
-      await _storage.remove(_userEmailKey);
-      await _storage.remove(_userNameKey);
-      await _storage.write(_isLoggedInKey, false);
+      await _storage.clearAuthData();
     }
   }
 
@@ -76,7 +69,7 @@ class AuthService extends GetxService {
         final data = doc.data()!;
         if (data.containsKey('name') && (data['name'] as String).isNotEmpty) {
           currentUserName.value = data['name'] as String;
-          await _storage.write(_userNameKey, data['name']);
+          await _storage.setUserName(data['name'] as String);
         }
       }
     } catch (_) {
@@ -115,9 +108,9 @@ class AuthService extends GetxService {
       currentUserName.value = displayName;
       isLoggedIn.value = true;
 
-      await _storage.write(_userEmailKey, email.trim());
-      await _storage.write(_userNameKey, displayName);
-      await _storage.write(_isLoggedInKey, true);
+      await _storage.setIsLoggedIn(true);
+      await _storage.setUserEmail(email.trim());
+      await _storage.setUserName(displayName);
 
       return true;
     } on FirebaseAuthException catch (e) {
@@ -147,9 +140,9 @@ class AuthService extends GetxService {
         currentUserName.value = name;
         isLoggedIn.value = true;
 
-        await _storage.write(_userEmailKey, user.email);
-        await _storage.write(_userNameKey, name);
-        await _storage.write(_isLoggedInKey, true);
+        await _storage.setIsLoggedIn(true);
+        await _storage.setUserEmail(user.email);
+        await _storage.setUserName(name);
         
         _fetchFirestoreUserProfile(user.uid);
       }
@@ -169,9 +162,7 @@ class AuthService extends GetxService {
     currentUserName.value = null;
     isLoggedIn.value = false;
 
-    await _storage.remove(_userEmailKey);
-    await _storage.remove(_userNameKey);
-    await _storage.write(_isLoggedInKey, false);
+    await _storage.clearAuthData();
   }
 
   String _getAuthErrorMessage(FirebaseAuthException e) {

@@ -31,6 +31,7 @@ class AuthController extends GetxController {
 
   Future<void> login() async {
     if (!loginFormKey.currentState!.validate()) return;
+    FocusManager.instance.primaryFocus?.unfocus();
 
     isLoading.value = true;
     try {
@@ -51,6 +52,7 @@ class AuthController extends GetxController {
 
   Future<void> register() async {
     if (!regFormKey.currentState!.validate()) return;
+    FocusManager.instance.primaryFocus?.unfocus();
 
     isLoading.value = true;
     try {
@@ -72,6 +74,7 @@ class AuthController extends GetxController {
   }
 
   Future<void> logout() async {
+    FocusManager.instance.primaryFocus?.unfocus();
     await _authService.logout();
     Get.offAllNamed(AppRoute.login);
     SnackbarHelper.showInfo('Logged Out', 'You have been logged out successfully');
