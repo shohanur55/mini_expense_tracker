@@ -28,12 +28,15 @@ class HomeView extends GetView<ExpenseController> {
 
           final recents = controller.recentExpenses;
 
-          return RefreshIndicator(
-            onRefresh: controller.fetchExpenses,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-              child: Column(
+          return Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
+              child: RefreshIndicator(
+                onRefresh: controller.fetchExpenses,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // App Top Banner / Header
@@ -204,10 +207,12 @@ class HomeView extends GetView<ExpenseController> {
                 ],
               ),
             ),
-          );
-        }),
-      ),
-    );
+          ),
+        ),
+      );
+    }),
+  ),
+);
   }
 
   Widget _buildExpenseTile(

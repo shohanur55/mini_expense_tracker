@@ -19,9 +19,11 @@ class LoginView extends GetView<AuthController> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-            child: Form(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+              child: Form(
               key: controller.loginFormKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -119,6 +121,7 @@ class LoginView extends GetView<AuthController> {
           ),
         ),
       ),
-    );
+    ),
+  );
   }
 }

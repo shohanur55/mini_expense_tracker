@@ -20,126 +20,133 @@ class ExpenseListView extends GetView<ExpenseController> {
     final categoriesFilterList = ['All', ...AppConstants.categories];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('All Expenses'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline),
-            onPressed: controller.openAddExpense,
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('All Expenses')),
       body: SafeArea(
-        child: Column(
-          children: [
-            // Search Input Field
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-              child: CustomTextField(
-                hintText: 'Search by category or note...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: Obx(() => controller.searchQuery.value.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () => controller.searchQuery.value = '',
-                      )
-                    : const SizedBox.shrink()),
-                onTap: null,
-                controller: TextEditingController(text: controller.searchQuery.value)
-                  ..selection = TextSelection.fromPosition(
-                    TextPosition(offset: controller.searchQuery.value.length),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: Column(
+              children: [
+                // Search Input Field
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+                  child: CustomTextField(
+                    hintText: 'Search by category or note...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: Obx(
+                      () => controller.searchQuery.value.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () => controller.searchQuery.value = '',
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                    onTap: null,
+                    controller:
+                        TextEditingController(text: controller.searchQuery.value)
+                          ..selection = TextSelection.fromPosition(
+                            TextPosition(
+                              offset: controller.searchQuery.value.length,
+                            ),
+                          ),
                   ),
-              ),
-            ),
+                ),
 
-            // Horizontal Category Filter Chips
-            SizedBox(
-              height: 44.h,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                itemCount: categoriesFilterList.length,
-                separatorBuilder: (context, index) => SizedBox(width: 8.w),
-                itemBuilder: (context, index) {
-                  final cat = categoriesFilterList[index];
-                  return Obx(() {
-                    final isSelected =
-                        controller.selectedCategoryFilter.value == cat;
-                    return FilterChip(
-                      selected: isSelected,
-                      label: Text(cat),
-                      labelStyle: TextStyle(
-                        color: isSelected
-                            ? Colors.white
-                            : (isDark
-                                ? AppColors.darkTextPrimary
-                                : AppColors.lightTextPrimary),
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.w400,
-                        fontSize: 13.sp,
-                      ),
-                      backgroundColor:
-                          isDark ? AppColors.darkCard : AppColors.lightSurface,
-                      selectedColor: AppColors.primary,
-                      checkmarkColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.r),
-                        side: BorderSide(
-                          color: isSelected
-                              ? AppColors.primary
-                              : (isDark
-                                  ? AppColors.darkBorder
-                                  : AppColors.lightBorder),
-                        ),
-                      ),
-                      onSelected: (selected) {
-                        controller.selectedCategoryFilter.value = cat;
-                      },
-                    );
-                  });
-                },
-              ),
-            ),
-            SizedBox(height: 12.h),
-
-            // Expense List Body
-            Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                final filtered = controller.filteredExpenses;
-
-                if (filtered.isEmpty) {
-                  return EmptyStateWidget(
-                    title: 'No Expenses Found',
-                    message: controller.searchQuery.value.isNotEmpty ||
-                            controller.selectedCategoryFilter.value != 'All'
-                        ? 'No expenses match your search or filter criteria.'
-                        : 'You haven\'t added any expenses yet.',
-                    actionText: 'Add Expense',
-                    onActionPressed: controller.openAddExpense,
-                  );
-                }
-
-                return RefreshIndicator(
-                  onRefresh: controller.fetchExpenses,
+                // Horizontal Category Filter Chips
+                SizedBox(
+                  height: 44.h,
                   child: ListView.separated(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-                    itemCount: filtered.length,
-                    separatorBuilder: (context, index) =>
-                        SizedBox(height: 12.h),
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    itemCount: categoriesFilterList.length,
+                    separatorBuilder: (context, index) => SizedBox(width: 8.w),
                     itemBuilder: (context, index) {
-                      final expense = filtered[index];
-                      return _buildExpenseTile(context, expense, isDark);
+                      final cat = categoriesFilterList[index];
+                      return Obx(() {
+                        final isSelected =
+                            controller.selectedCategoryFilter.value == cat;
+                        return FilterChip(
+                          selected: isSelected,
+                          label: Text(cat),
+                          labelStyle: TextStyle(
+                            color: isSelected
+                                ? Colors.white
+                                : (isDark
+                                      ? AppColors.darkTextPrimary
+                                      : AppColors.lightTextPrimary),
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.w400,
+                            fontSize: 13.sp,
+                          ),
+                          backgroundColor: isDark
+                              ? AppColors.darkCard
+                              : AppColors.lightSurface,
+                          selectedColor: AppColors.primary,
+                          checkmarkColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.r),
+                            side: BorderSide(
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : (isDark
+                                        ? AppColors.darkBorder
+                                        : AppColors.lightBorder),
+                            ),
+                          ),
+                          onSelected: (selected) {
+                            controller.selectedCategoryFilter.value = cat;
+                          },
+                        );
+                      });
                     },
                   ),
-                );
-              }),
+                ),
+                SizedBox(height: 12.h),
+
+                // Expense List Body
+                Expanded(
+                  child: Obx(() {
+                    if (controller.isLoading.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final filtered = controller.filteredExpenses;
+
+                    if (filtered.isEmpty) {
+                      return EmptyStateWidget(
+                        title: 'No Expenses Found',
+                        message:
+                            controller.searchQuery.value.isNotEmpty ||
+                                controller.selectedCategoryFilter.value != 'All'
+                            ? 'No expenses match your search or filter criteria.'
+                            : 'You haven\'t added any expenses yet.',
+                        actionText: 'Add Expense',
+                        onActionPressed: controller.openAddExpense,
+                      );
+                    }
+
+                    return RefreshIndicator(
+                      onRefresh: controller.fetchExpenses,
+                      child: ListView.separated(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 8.h,
+                        ),
+                        itemCount: filtered.length,
+                        separatorBuilder: (context, index) =>
+                            SizedBox(height: 12.h),
+                        itemBuilder: (context, index) {
+                          final expense = filtered[index];
+                          return _buildExpenseTile(context, expense, isDark);
+                        },
+                      ),
+                    );
+                  }),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -151,7 +158,10 @@ class ExpenseListView extends GetView<ExpenseController> {
   }
 
   Widget _buildExpenseTile(
-      BuildContext context, ExpenseModel expense, bool isDark) {
+    BuildContext context,
+    ExpenseModel expense,
+    bool isDark,
+  ) {
     final catColor = AppColors.getCategoryColor(expense.category);
     final catIcon = AppConstants.getCategoryIcon(expense.category);
 
@@ -175,18 +185,18 @@ class ExpenseListView extends GetView<ExpenseController> {
                 Text(
                   expense.category,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 SizedBox(height: 2.h),
                 Text(
                   expense.note ?? DateFormatter.formatShortDate(expense.date),
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: isDark
-                            ? AppColors.darkTextSecondary
-                            : AppColors.lightTextSecondary,
-                      ),
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.lightTextSecondary,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
