@@ -8,25 +8,35 @@ class AuthController extends GetxController {
   static AuthController get to => Get.find<AuthController>();
   final AuthService _authService = AuthService.to;
 
-  final loginEmailController = TextEditingController();
-  final loginPasswordController = TextEditingController();
-  final loginFormKey = GlobalKey<FormState>();
+  late TextEditingController loginEmailController;
+  late TextEditingController loginPasswordController;
+  GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
 
-  final regNameController = TextEditingController();
-  final regEmailController = TextEditingController();
-  final regPasswordController = TextEditingController();
-  final regFormKey = GlobalKey<FormState>();
+  late TextEditingController regNameController;
+  late TextEditingController regEmailController;
+  late TextEditingController regPasswordController;
+  GlobalKey<FormState> regFormKey = GlobalKey<FormState>();
 
   final RxBool isLoading = false.obs;
 
   @override
-  void onClose() {
-    loginEmailController.dispose();
-    loginPasswordController.dispose();
-    regNameController.dispose();
-    regEmailController.dispose();
-    regPasswordController.dispose();
-    super.onClose();
+  void onInit() {
+    super.onInit();
+    resetLoginForm();
+    resetRegForm();
+  }
+
+  void resetLoginForm() {
+    loginEmailController = TextEditingController();
+    loginPasswordController = TextEditingController();
+    loginFormKey = GlobalKey<FormState>();
+  }
+
+  void resetRegForm() {
+    regNameController = TextEditingController();
+    regEmailController = TextEditingController();
+    regPasswordController = TextEditingController();
+    regFormKey = GlobalKey<FormState>();
   }
 
   Future<void> login() async {
@@ -40,8 +50,7 @@ class AuthController extends GetxController {
         password: loginPasswordController.text,
       );
       SnackbarHelper.showSuccess('Welcome Back!', 'Logged in successfully');
-      loginEmailController.clear();
-      loginPasswordController.clear();
+      resetLoginForm();
       Get.offAllNamed(AppRoute.mainNav);
     } catch (e) {
       SnackbarHelper.showError('Login Failed', e.toString());
@@ -62,9 +71,7 @@ class AuthController extends GetxController {
         name: regNameController.text.trim(),
       );
       SnackbarHelper.showSuccess('Account Created!', 'Welcome to Mini Expense Tracker');
-      regNameController.clear();
-      regEmailController.clear();
-      regPasswordController.clear();
+      resetRegForm();
       Get.offAllNamed(AppRoute.mainNav);
     } catch (e) {
       SnackbarHelper.showError('Registration Failed', e.toString());
@@ -75,6 +82,8 @@ class AuthController extends GetxController {
 
   Future<void> logout() async {
     FocusManager.instance.primaryFocus?.unfocus();
+    resetLoginForm();
+    resetRegForm();
     await _authService.logout();
     Get.offAllNamed(AppRoute.login);
     SnackbarHelper.showInfo('Logged Out', 'You have been logged out successfully');
