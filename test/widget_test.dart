@@ -56,6 +56,29 @@ void main() {
       expect(parsed.note, model.note);
     });
 
+    test('toSqfliteMap and fromSqfliteMap serialization works correctly', () {
+      final now = DateTime.now();
+      final model = ExpenseModel(
+        id: 'sqflite_1',
+        userId: 'user_sqflite',
+        amount: 250.75,
+        category: 'Bills & Utilities',
+        date: now,
+        note: 'Internet bill',
+        createdAt: now,
+      );
+
+      final map = model.toSqfliteMap();
+      final parsed = ExpenseModel.fromSqfliteMap(map);
+
+      expect(parsed.id, model.id);
+      expect(parsed.userId, model.userId);
+      expect(parsed.amount, model.amount);
+      expect(parsed.category, model.category);
+      expect(parsed.note, model.note);
+      expect(parsed.date.toIso8601String(), model.date.toIso8601String());
+    });
+
     test('Total expense and monthly calculations test', () {
       final now = DateTime.now();
       final lastMonth = DateTime(now.year, now.month - 1, 15);

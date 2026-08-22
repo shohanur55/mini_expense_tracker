@@ -29,7 +29,6 @@ class AddEditExpenseView extends GetView<ExpenseController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Amount Field
                     CustomTextField(
                       label: 'Amount (${AppConstants.currencySymbol})',
                       hintText: '0.00',
@@ -42,7 +41,6 @@ class AddEditExpenseView extends GetView<ExpenseController> {
                     ),
                     SizedBox(height: 20.h),
 
-                    // Category Field
                     Obx(
                       () => CustomDropdown<String>(
                         label: 'Category',
@@ -59,7 +57,6 @@ class AddEditExpenseView extends GetView<ExpenseController> {
                     ),
                     SizedBox(height: 20.h),
 
-                    // Date Picker Field
                     Obx(
                       () => CustomDatePicker(
                         label: 'Expense Date',
@@ -71,17 +68,15 @@ class AddEditExpenseView extends GetView<ExpenseController> {
                     ),
                     SizedBox(height: 20.h),
 
-                    // Short Note Field (Optional)
                     CustomTextField(
                       label: 'Description / Note (Optional)',
-                      hintText: 'Add notes (e.g., Dinner with team)',
+                      hintText: 'Add notes (e.g., Lunch, Coffee, Groceries)',
                       controller: controller.noteController,
                       maxLines: 3,
                       prefixIcon: const Icon(Icons.note_alt_outlined),
                     ),
                     SizedBox(height: 32.h),
 
-                    // Save Button
                     Obx(
                       () => CustomButton(
                         text: isEditing ? 'Update Expense' : 'Save Expense',

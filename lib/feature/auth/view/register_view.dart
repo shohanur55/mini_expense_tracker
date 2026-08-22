@@ -48,7 +48,6 @@ class RegisterView extends GetView<AuthController> {
 
                     SizedBox(height: 16.h),
 
-                    // Email Address
                     CustomTextField(
                       label: 'Email Address',
                       hintText: 'name@example.com',
@@ -59,7 +58,6 @@ class RegisterView extends GetView<AuthController> {
                     ),
                     SizedBox(height: 16.h),
 
-                    // Password
                     CustomPasswordField(
                       label: 'Password',
                       hintText: 'Create a password (min 6 chars)',
@@ -68,7 +66,6 @@ class RegisterView extends GetView<AuthController> {
                     ),
                     SizedBox(height: 28.h),
 
-                    // Register Button
                     Obx(
                       () => CustomButton(
                         text: 'Register Account',
@@ -78,7 +75,6 @@ class RegisterView extends GetView<AuthController> {
                     ),
                     SizedBox(height: 20.h),
 
-                    // Sign in link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

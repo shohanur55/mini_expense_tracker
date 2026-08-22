@@ -18,6 +18,7 @@ class ExpenseController extends GetxController {
   final RxBool isSaving = false.obs;
   final RxString selectedCategoryFilter = 'All'.obs;
   final RxString searchQuery = ''.obs;
+  final searchController = TextEditingController();
 
   // Form Fields for Add/Edit Expense
   final formKey = GlobalKey<FormState>();
@@ -40,6 +41,7 @@ class ExpenseController extends GetxController {
   @override
   void onClose() {
     _expenseSubscription?.cancel();
+    searchController.dispose();
     amountController.dispose();
     noteController.dispose();
     super.onClose();

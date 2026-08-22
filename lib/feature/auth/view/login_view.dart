@@ -29,7 +29,6 @@ class LoginView extends GetView<AuthController> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // App Logo & Header
                   Container(
                     width: 72.w,
                     height: 72.w,
@@ -64,7 +63,6 @@ class LoginView extends GetView<AuthController> {
                   ),
                   SizedBox(height: 36.h),
 
-                  // Email Field
                   CustomTextField(
                     label: 'Email Address',
                     hintText: 'name@example.com',
@@ -75,7 +73,6 @@ class LoginView extends GetView<AuthController> {
                   ),
                   SizedBox(height: 16.h),
 
-                  // Password Field
                   CustomPasswordField(
                     label: 'Password',
                     hintText: 'Enter your password',
@@ -84,7 +81,6 @@ class LoginView extends GetView<AuthController> {
                   ),
                   SizedBox(height: 28.h),
 
-                  // Submit Button
                   Obx(
                     () => CustomButton(
                       text: 'Sign In',
@@ -94,7 +90,6 @@ class LoginView extends GetView<AuthController> {
                   ),
                   SizedBox(height: 20.h),
 
-                  // Navigation link to Register
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

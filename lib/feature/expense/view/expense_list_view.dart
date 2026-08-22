@@ -27,32 +27,27 @@ class ExpenseListView extends GetView<ExpenseController> {
             constraints: const BoxConstraints(maxWidth: 720),
             child: Column(
               children: [
-                // Search Input Field
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
                   child: CustomTextField(
                     hintText: 'Search by category or note...',
                     prefixIcon: const Icon(Icons.search),
+                    controller: controller.searchController,
+                    onChanged: (val) => controller.searchQuery.value = val,
                     suffixIcon: Obx(
                       () => controller.searchQuery.value.isNotEmpty
                           ? IconButton(
                               icon: const Icon(Icons.clear),
-                              onPressed: () => controller.searchQuery.value = '',
+                              onPressed: () {
+                                controller.searchController.clear();
+                                controller.searchQuery.value = '';
+                              },
                             )
                           : const SizedBox.shrink(),
                     ),
-                    onTap: null,
-                    controller:
-                        TextEditingController(text: controller.searchQuery.value)
-                          ..selection = TextSelection.fromPosition(
-                            TextPosition(
-                              offset: controller.searchQuery.value.length,
-                            ),
-                          ),
                   ),
                 ),
 
-                // Horizontal Category Filter Chips
                 SizedBox(
                   height: 44.h,
                   child: ListView.separated(
@@ -104,7 +99,6 @@ class ExpenseListView extends GetView<ExpenseController> {
                 ),
                 SizedBox(height: 12.h),
 
-                // Expense List Body
                 Expanded(
                   child: Obx(() {
                     if (controller.isLoading.value) {

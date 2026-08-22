@@ -51,7 +51,6 @@ class ExpenseChartView extends GetView<ExpenseController> {
                     ),
                     SizedBox(height: 20.h),
 
-                    // Pie Chart Card
                     CustomCard(
                       padding: EdgeInsets.all(20.r),
                       child: Column(
@@ -94,7 +93,6 @@ class ExpenseChartView extends GetView<ExpenseController> {
                     ),
                     SizedBox(height: 24.h),
 
-                    // Category List Breakdown
                     Text(
                       'Category Breakdown',
                       style: Theme.of(context)

@@ -10,27 +10,22 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Load environment variables
   try {
     await dotenv.load(fileName: '.env');
   } catch (e) {
-    debugPrint('dotenv loading warning: $e');
+    debugPrint('dotenv: $e');
   }
 
-  // Initialize Firebase Core
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } catch (e) {
-    debugPrint('Firebase initialization warning: $e');
+    debugPrint('Firebase init error: $e');
   }
 
-  // Initialize Storage Service (SharedPreferences)
   await Get.putAsync(() => StorageService().init());
-
-  // Initialize core app services (Auth, Service, Theme)
-  AppBinding.initCoreServices();
+  await AppBinding.initCoreServices();
 
   runApp(const MyApp());
 }

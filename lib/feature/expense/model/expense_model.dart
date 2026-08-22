@@ -31,6 +31,30 @@ class ExpenseModel {
     };
   }
 
+  Map<String, dynamic> toSqfliteMap() {
+    return {
+      'id': id,
+      'userId': userId,
+      'amount': amount,
+      'category': category,
+      'date': date.toIso8601String(),
+      'note': note,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
+
+  factory ExpenseModel.fromSqfliteMap(Map<String, dynamic> map) {
+    return ExpenseModel(
+      id: map['id'] as String? ?? '',
+      userId: map['userId'] as String? ?? '',
+      amount: (map['amount'] as num?)?.toDouble() ?? 0.0,
+      category: map['category'] as String? ?? 'General',
+      date: DateTime.tryParse(map['date'] as String? ?? '') ?? DateTime.now(),
+      note: map['note'] as String?,
+      createdAt: DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now(),
+    );
+  }
+
   factory ExpenseModel.fromJson(Map<String, dynamic> json, {String? docId}) {
     return ExpenseModel(
       id: docId ?? (json['id'] as String? ?? ''),
