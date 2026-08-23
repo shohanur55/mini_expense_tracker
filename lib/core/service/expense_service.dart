@@ -56,7 +56,7 @@ class ExpenseService extends GetxService {
     }
   }
 
-  Future<void> addExpense(ExpenseModel expense) async {
+  Future<bool> addExpense(ExpenseModel expense) async {
     final targetUid = expense.userId.isNotEmpty ? expense.userId : 'guest_user';
     
     // Save to local SQLite database immediately
@@ -64,13 +64,18 @@ class ExpenseService extends GetxService {
 
     // Sync with Firestore
     try {
-      await _userExpensesRef(targetUid).doc(expense.id).set(expense.toJson());
+      await _userExpensesRef(targetUid)
+          .doc(expense.id)
+          .set(expense.toJson())
+          .timeout(const Duration(seconds: 2));
+      return true;
     } catch (e) {
-      debugPrint('Firestore add expense error: $e');
+      debugPrint('Firestore add expense error/offline: $e');
+      return false;
     }
   }
 
-  Future<void> updateExpense(ExpenseModel updatedExpense) async {
+  Future<bool> updateExpense(ExpenseModel updatedExpense) async {
     final targetUid = updatedExpense.userId.isNotEmpty ? updatedExpense.userId : 'guest_user';
     
     // Update local SQLite database immediately
@@ -78,13 +83,18 @@ class ExpenseService extends GetxService {
 
     // Sync with Firestore
     try {
-      await _userExpensesRef(targetUid).doc(updatedExpense.id).update(updatedExpense.toJson());
+      await _userExpensesRef(targetUid)
+          .doc(updatedExpense.id)
+          .update(updatedExpense.toJson())
+          .timeout(const Duration(seconds: 2));
+      return true;
     } catch (e) {
-      debugPrint('Firestore update expense error: $e');
+      debugPrint('Firestore update expense error/offline: $e');
+      return false;
     }
   }
 
-  Future<void> deleteExpense(String expenseId, String userId) async {
+  Future<bool> deleteExpense(String expenseId, String userId) async {
     final targetUid = userId.isNotEmpty ? userId : 'guest_user';
     
     // Delete from local SQLite database immediately
@@ -92,9 +102,14 @@ class ExpenseService extends GetxService {
 
     // Sync with Firestore
     try {
-      await _userExpensesRef(targetUid).doc(expenseId).delete();
+      await _userExpensesRef(targetUid)
+          .doc(expenseId)
+          .delete()
+          .timeout(const Duration(seconds: 2));
+      return true;
     } catch (e) {
-      debugPrint('Firestore delete expense error: $e');
+      debugPrint('Firestore delete expense error/offline: $e');
+      return false;
     }
   }
 }
