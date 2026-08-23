@@ -138,7 +138,27 @@ FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
 FIREBASE_STORAGE_BUCKET=your_storage_bucket
 ```
 
-### 4. Run the app
+### 4. Firebase Setup Using CLI
+
+1. **Install Node.js & npm**:
+   Download from [Node.js Official Prebuilt Installer](https://nodejs.org/en/download/prebuilt-installer).
+
+2. **Run CLI setup commands in terminal**:
+   ```bash
+   npm install -g firebase-tools
+   dart pub global activate flutterfire_cli
+   firebase login
+   flutterfire configure
+   ```
+
+3. **Known Issues & Solutions**:
+   - **`firebase` is not recognized**: Setup the `firebase` executable path in your system environment variables.
+   - **`firebase.ps1` cannot be loaded**: Running scripts is disabled on Windows PowerShell. Solution available on [StackOverflow](https://stackoverflow.com/questions/72111770/firebase-ps1-cannot-be-loaded-because-running-scripts-is-disabled-on-this-system).
+
+4. **Official Documentation**:
+   - [Firebase Official Doc for Flutter](https://firebase.flutter.dev/docs/overview)
+
+### 5. Run the app
 ```bash
 flutter run
 ```
@@ -148,4 +168,4 @@ flutter run
 ## Author & License
 
 - **Author**: Md. Shohanur rahaman
-- **License**: [MIT License](LICENSE)
+

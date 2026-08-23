@@ -155,6 +155,8 @@ class ExpenseController extends GetxController {
 
     try {
       final isEdit = editingExpense != null;
+      bool isSynced = false;
+
       if (!isEdit) {
         // Create New Expense
         final newExpense = ExpenseModel(
@@ -166,7 +168,7 @@ class ExpenseController extends GetxController {
           note: noteController.text.trim().isEmpty ? null : noteController.text.trim(),
           createdAt: DateTime.now(),
         );
-        await _expenseService.addExpense(newExpense);
+        isSynced = await _expenseService.addExpense(newExpense);
         if (!expenses.any((e) => e.id == newExpense.id)) {
           expenses.insert(0, newExpense);
         }
@@ -178,17 +180,21 @@ class ExpenseController extends GetxController {
           date: selectedDate.value!,
           note: noteController.text.trim().isEmpty ? null : noteController.text.trim(),
         );
-        await _expenseService.updateExpense(updated);
+        isSynced = await _expenseService.updateExpense(updated);
         final index = expenses.indexWhere((e) => e.id == updated.id);
         if (index != -1) {
           expenses[index] = updated;
         }
       }
       Get.back();
-      if (!isEdit) {
-        SnackbarHelper.showSuccess('Success', 'Expense added successfully');
+      if (isSynced) {
+        if (!isEdit) {
+          SnackbarHelper.showSuccess('Success', 'Expense added successfully');
+        } else {
+          SnackbarHelper.showSuccess('Updated', 'Expense details updated');
+        }
       } else {
-        SnackbarHelper.showSuccess('Updated', 'Expense details updated');
+        SnackbarHelper.showInfo('Offline Mode', 'Data stored in local storage');
       }
     } catch (e) {
       SnackbarHelper.showError('Error', 'Failed to save expense: $e');
@@ -199,9 +205,13 @@ class ExpenseController extends GetxController {
 
   Future<void> deleteExpense(ExpenseModel expense) async {
     try {
-      await _expenseService.deleteExpense(expense.id, userId);
+      final isSynced = await _expenseService.deleteExpense(expense.id, userId);
       expenses.removeWhere((e) => e.id == expense.id);
-      SnackbarHelper.showSuccess('Deleted', 'Expense removed successfully');
+      if (isSynced) {
+        SnackbarHelper.showSuccess('Deleted', 'Expense removed successfully');
+      } else {
+        SnackbarHelper.showInfo('Offline Mode', 'Expense removed from local storage');
+      }
     } catch (e) {
       SnackbarHelper.showError('Error', 'Failed to delete expense: $e');
     }
